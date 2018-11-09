@@ -11,18 +11,36 @@ public class GameSettings : MonoBehaviour
 
     string path;
     string jsonString;
-    Settings settings;
+    Settings settings = new Settings();
 
     private void Start()
     {
-        path = Application.streamingAssetsPath + "/Settings.json";
-        jsonString = File.ReadAllText(path);
-        settings = JsonUtility.FromJson<Settings>(jsonString);
-
-        InitSettings();
+        LoadData();
+        InitData();
     }
 
-    void InitSettings()
+    void LoadData()
+    {
+        path = Path.Combine(Application.persistentDataPath, "Settings.json");
+        if (!File.Exists(path))
+            LoadFromResource();
+        else
+            LoadFromSave();
+    }
+
+    void LoadFromSave()
+    {
+        jsonString = File.ReadAllText(path);
+        settings = JsonUtility.FromJson<Settings>(jsonString);
+    }
+
+    void LoadFromResource()
+    {
+        TextAsset jsonTextFile = Resources.Load<TextAsset>("Settings") as TextAsset;
+        settings = JsonUtility.FromJson<Settings>(jsonTextFile.ToString());
+    }
+
+    void InitData()
     {
 
         if (!settings.Music)

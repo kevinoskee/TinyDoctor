@@ -1,0 +1,11 @@
+{
+    "Coins": 0,
+  "Cards": [
+    false,
+    false,
+    false
+  ],
+  "Pretest": -1,
+  "Posttest": -1,
+  "GainScore": -1
+}

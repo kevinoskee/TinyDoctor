@@ -10,23 +10,41 @@ public class AlmanacControl : MonoBehaviour
 
     string path;
     string jsonString;
-    Doctor doctor;
+    Doctor doctor = new Doctor();
     public Image[] cards;
     Color unlocked = Color.white;
     Color locked = Color.gray;
 
     private void Start()
     {
-        path = Application.streamingAssetsPath + "/Doctor.json";
-        jsonString = File.ReadAllText(path);
-        doctor = JsonUtility.FromJson<Doctor>(jsonString);
-        CheckCards();
-        
+        LoadData();
+        InitData();
     }
 
-    void CheckCards()
+    void LoadData()
     {
-        for(int i = 0; i < doctor.Cards.Length; i++)
+        path = Path.Combine(Application.persistentDataPath, "Doctor.json");
+        if (!File.Exists(path))
+            LoadFromResource();
+        else
+            LoadFromSave();
+    }
+
+    void LoadFromSave()
+    {
+        jsonString = File.ReadAllText(path);
+        doctor = JsonUtility.FromJson<Doctor>(jsonString);
+    }
+
+    void LoadFromResource()
+    {
+        TextAsset jsonTextFile = Resources.Load<TextAsset>("Doctor") as TextAsset;
+        doctor = JsonUtility.FromJson<Doctor>(jsonTextFile.ToString());
+    }
+
+    void InitData()
+    {
+        for (int i = 0; i < doctor.Cards.Length; i++)
         {
             if (doctor.Cards[i])
                 cards[i].color = unlocked;
@@ -41,5 +59,8 @@ public class AlmanacControl : MonoBehaviour
     {
         public int Coins;
         public bool[] Cards;
+        public int Pretest;
+        public int Posttest;
+        public int GainScore;
     }
 }

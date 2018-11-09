@@ -1,7 +1,7 @@
 {
     "Graphics": 2,
-    "Music": false,
+    "Music": true,
     "Sound": true,
     "MusicVol": 0.0,
-    "SoundVol": -68.03207397460938
+    "SoundVol": 0.0
 }

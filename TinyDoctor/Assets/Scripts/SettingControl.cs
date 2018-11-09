@@ -11,27 +11,47 @@ public class SettingControl : MonoBehaviour {
     public Slider MusicSlider;
     public Toggle SoundToggle;
     public Slider SoundSlider;
+    public Dropdown GraphicsQuality;
     public GameObject SettingsUI;
 
     string path;
     string jsonString;
-    Settings settings;
+    Settings settings = new Settings();
 
     private void Start()
     {
-        path = Application.streamingAssetsPath + "/Settings.json";
-        jsonString = File.ReadAllText(path);
-        settings = JsonUtility.FromJson<Settings>(jsonString);
-
-        InitSettings();
+        LoadData();
+        InitData();
     }
 
-    void InitSettings()
+    void LoadData()
+    {
+        path = Path.Combine(Application.persistentDataPath, "Settings.json");
+        if (!File.Exists(path))
+            LoadFromResource();
+        else
+            LoadFromSave();
+    }
+
+    void LoadFromSave()
+    {
+        jsonString = File.ReadAllText(path);
+        settings = JsonUtility.FromJson<Settings>(jsonString);
+    }
+
+    void LoadFromResource()
+    {
+        TextAsset jsonTextFile = Resources.Load<TextAsset>("Settings") as TextAsset;
+        settings = JsonUtility.FromJson<Settings>(jsonTextFile.ToString());
+    }
+
+    void InitData()
     {
         MusicToggle.isOn = settings.Music;
         SoundToggle.isOn = settings.Sound;
         MusicSlider.value = settings.MusicVol;
         SoundSlider.value = settings.SoundVol;
+        GraphicsQuality.value = settings.Graphics;
 
         if (!settings.Music)
         {
@@ -102,13 +122,13 @@ public class SettingControl : MonoBehaviour {
 
     public void OnClose()
     {
-        UpdateSettings();
         SettingsUI.SetActive(false);
+        UpdateSettings();
     }
 
     void UpdateSettings()
     {
-
+        path = Path.Combine(Application.persistentDataPath, "Settings.json");
         settings.Graphics = QualitySettings.GetQualityLevel();
         settings.Music = MusicToggle.isOn;
         settings.Sound = SoundToggle.isOn;

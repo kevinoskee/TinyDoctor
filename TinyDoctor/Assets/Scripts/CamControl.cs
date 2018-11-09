@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 public class CamControl : MonoBehaviour
 {
 
-
     private Camera Camera;
     public Vector3[] pos;
     public Button prevBtn;

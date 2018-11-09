@@ -8,9 +8,7 @@ public class Boss : MonoBehaviour
     public Bullet bullet;
     public GameObject HitEffect;
     public GameObject DestroyEffect;
-    public GameObject GameOverUI;
     public GameObject virus;
-    public GameObject CardUI;
     public GameObject BossHandler;
     private float spawnRadius = 2;
     private Vector3 spawnPos;
@@ -42,7 +40,7 @@ public class Boss : MonoBehaviour
         GameObject destroyEffect;
         destroyEffect = Instantiate(DestroyEffect, gameObject.transform.position, gameObject.transform.rotation) as GameObject;
         Destroy(destroyEffect, 2f);
-        CardUI.SetActive(true);
+
     }
 
     private void OnCollisionEnter(Collision collision)

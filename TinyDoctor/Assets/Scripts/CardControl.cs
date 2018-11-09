@@ -4,7 +4,6 @@ using UnityEngine.UI;
 public class CardControl : MonoBehaviour, IPointerClickHandler
 {
     Color unlocked = Color.white;
-    Color locked = Color.gray;
     public GameObject CardInfo;
     public GameObject Alert;
 
@@ -15,17 +14,17 @@ public class CardControl : MonoBehaviour, IPointerClickHandler
             switch (gameObject.name)
             {
                 case "Card1":
-                    CardInfoControl.CardImage = gameObject.GetComponent<Image>().sprite;
-                    CardInfoControl.JSONFile = "/Card1.json";
+                    CardInfoControl.cardIndex = 0;
                     break;
                 case "Card2":
-          
+                    CardInfoControl.cardIndex = 1;
                     break;
                 case "Card3":
-            
+                    CardInfoControl.cardIndex = 2;
                     break;
 
             }
+            CardInfoControl.CardImage = gameObject.GetComponent<Image>().sprite;
             CardInfo.SetActive(true);
         }
         else

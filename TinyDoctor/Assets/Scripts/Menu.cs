@@ -2,6 +2,8 @@
 using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEngine.UI;
+using System.IO;
+using System;
 
 public class Menu : MonoBehaviour
 {
@@ -10,15 +12,36 @@ public class Menu : MonoBehaviour
     public GameObject Settings;
     public GameObject Almanac;
     public GameObject CardInfo;
+    public GameObject Shop;
 
     public GameObject LoadScreen;
     public Slider Loading;
     public HelpControl helpControl;
 
+    string path;
+
+    Doctor doctor = new Doctor();
 
     public void StartGame()
     {
-        StartCoroutine(LoadAsync("Comic"));
+        path = Path.Combine(Application.persistentDataPath, "Doctor.json");
+        if (!File.Exists(path))
+        {
+            CreateFile();
+            StartCoroutine(LoadAsync("Quiz"));
+        }
+        else
+            StartCoroutine(LoadAsync("Comic"));
+    }
+
+    void CreateFile()
+    {
+        doctor.Cards = new bool[] { false, false, false };
+        doctor.Pretest = -1;
+        doctor.Posttest = -1;
+        doctor.GainScore = -1;
+        string newDoctor = JsonUtility.ToJson(doctor, true);
+        File.WriteAllText(path, newDoctor);
     }
 
     public void OnAbout()
@@ -43,6 +66,11 @@ public class Menu : MonoBehaviour
         Almanac.SetActive(true);
     }
 
+    public void OnShop()
+    {
+        Shop.SetActive(true);
+    }
+
     public void OnClose()
     {
         About.SetActive(false);
@@ -50,6 +78,7 @@ public class Menu : MonoBehaviour
         Settings.SetActive(false);
         Almanac.SetActive(false);
         CardInfo.SetActive(false);
+        Shop.SetActive(false);
     }
 
     public void ExitGame()
@@ -68,5 +97,15 @@ public class Menu : MonoBehaviour
             Loading.value = progress;
             yield return null;
         }
+    }
+
+    [Serializable]
+    public class Doctor
+    {
+        public int Coins;
+        public bool[] Cards;
+        public int Pretest;
+        public int Posttest;
+        public int GainScore;
     }
 }

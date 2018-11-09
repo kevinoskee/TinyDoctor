@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using UnityEngine.UI;
 using System.IO;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 namespace UnityStandardAssets.Characters.FirstPerson
 {
@@ -10,6 +12,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
     [RequireComponent(typeof (CapsuleCollider))]
     public class RigidbodyFirstPersonController : MonoBehaviour
     {
+        #region variables
         public AudioClip colEnemy;
         public AudioClip die;
         public AudioClip coinCollect;
@@ -42,12 +45,18 @@ namespace UnityStandardAssets.Characters.FirstPerson
         public Image OxygenBar;
         public Text Coin;
 
+        public GameObject CardUI;
         public GameObject GameOverUI;
         public AudioSource Mainsource;
 
+        public GameObject LoadScreen;
+        public Slider Loading;
+
         string path;
         string jsonString;
-        Doctor doctor;
+        Doctor doctor = new Doctor();
+
+        #endregion
 
         void OnCollisionEnter(Collision collision)
         {
@@ -95,7 +104,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             enabled = false;
             source.PlayOneShot(die);
             GameOverUI.SetActive(true);
-            Time.timeScale = 0f;
+           // Time.timeScale = 0f;
             Mainsource.Stop();
         }
 
@@ -199,11 +208,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private void Start()
         {
 
-            path = Application.streamingAssetsPath + "/Doctor.json";
-            jsonString = File.ReadAllText(path);
-            doctor = JsonUtility.FromJson<Doctor>(jsonString);
-            totalCoins = doctor.Coins;
-
+            LoadData();
+            InitData();
 
             m_RigidBody = GetComponent<Rigidbody>();
             m_Capsule = GetComponent<CapsuleCollider>();
@@ -211,6 +217,27 @@ namespace UnityStandardAssets.Characters.FirstPerson
             source = GetComponent<AudioSource>();
         }
 
+        void LoadData()
+        {
+            path = Path.Combine(Application.persistentDataPath, "Doctor.json");
+            jsonString = File.ReadAllText(path);
+            doctor = JsonUtility.FromJson<Doctor>(jsonString);
+        }
+
+        void InitData()
+        {
+            totalCoins = doctor.Coins;
+        }
+
+        void UpdateDoctor()
+        {
+            path = Path.Combine(Application.persistentDataPath, "Doctor.json");
+            doctor.Coins = totalCoins;
+            doctor.Cards[0] = true;
+            string newDoctor = JsonUtility.ToJson(doctor, true);
+            File.WriteAllText(path, newDoctor);
+            LoadData();
+        }
 
         private void Update()
         {
@@ -227,17 +254,13 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
             if (!Boss.activeSelf)
             {
+                if(!doctor.Cards[0])
+                    CardUI.SetActive(true);
+                else
+                    StartCoroutine(LoadAsync("Game Menu"));
                 UpdateDoctor();
                 enabled = false;
             }
-        }
-
-        void UpdateDoctor()
-        {
-            doctor.Coins = totalCoins;
-            string newDoctor = JsonUtility.ToJson(doctor,true);
-            File.WriteAllText(path, newDoctor);
-             
         }
 
         void UpdateHealthBar()
@@ -259,6 +282,20 @@ namespace UnityStandardAssets.Characters.FirstPerson
         void UpdateCoins()
         {
             Coin.text = totalCoins.ToString();
+        }
+
+        IEnumerator LoadAsync(string scene)
+        {
+            yield return new WaitForSeconds(2);
+            AsyncOperation operation = SceneManager.LoadSceneAsync(scene);
+            LoadScreen.SetActive(true);
+
+            while (!operation.isDone)
+            {
+                float progress = Mathf.Clamp01(operation.progress / 0.9f);
+                Loading.value = progress;
+                yield return null;
+            }
         }
 
         private void FixedUpdate()
@@ -394,5 +431,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
     {
         public int Coins;
         public bool[] Cards;
+        public int Pretest;
+        public int Posttest;
+        public int GainScore;
     }
 }
