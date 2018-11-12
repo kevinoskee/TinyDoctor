@@ -2,81 +2,83 @@
 using UnityEngine.UI;
 using System.IO;
 using System;
+using System.Collections;
 
 public class CardInfoControl : MonoBehaviour {
 
     public static Sprite CardImage;
-    public static int cardIndex;
+    public static string cardName;
+
     public Image Card;
+    public ScrollRect scrollRect;
 
     public Text Info;
 
     string path;
     string jsonString;
+    string section;
 
-    Cards[] cards;
 
     private void Start()
     {
-
-        TextAsset jsonTextFile = Resources.Load<TextAsset>("Cards") as TextAsset;
-        cards = JsonHelper.GetJsonArray<Cards>(jsonTextFile.ToString());
-
         Card.sprite = CardImage;
-        Info.text = cards[cardIndex].Description;
+        scrollRect.normalizedPosition = new Vector2(0, 1);
+        section = "Description";
+        GetFromTxt();
     }
 
     public void OnClose()
     {
         gameObject.SetActive(false);
-        Info.text = cards[cardIndex].Description;
+        scrollRect.normalizedPosition = new Vector2(0, 1);
+        section = "Description";
+        GetFromTxt();
     }
 
     public void OnDescription()
     {
-           Info.text = cards[cardIndex].Description;
+        scrollRect.normalizedPosition = new Vector2(0, 1);
+        section = "Description";
+        GetFromTxt();
     }
 
     public void OnSymptoms()
     {
-           Info.text = cards[cardIndex].Symptoms;
+        scrollRect.normalizedPosition = new Vector2(0, 1);
+        section = "Symptoms";
+        GetFromTxt();
     }
 
     public void OnMedications()
     {
-          Info.text = cards[cardIndex].Medications;
+        scrollRect.normalizedPosition = new Vector2(0, 1);
+        section = "Medications";
+        GetFromTxt();
     }
 
     public void OnPreventions()
     {
-          Info.text = cards[cardIndex].Preventions;
+        scrollRect.normalizedPosition = new Vector2(0, 1);
+        section = "Preventions";
+        GetFromTxt();
     }
 
-    [Serializable]
-    public struct Cards
+    public void GetFromTxt()
     {
-            public string Description;
-            public string Symptoms;
-            public string Medications;
-            public string Preventions;
-        
-    }
-
-
-
-    public class JsonHelper
-    {
-        public static T[] GetJsonArray<T>(string json)
+        string newPath = "Assets/Resources/Card.txt";
+        string[] lines = File.ReadAllLines(newPath);
+        string data = "";
+        int start = Array.FindIndex(lines, row => row.Contains(">" + cardName + " " + section)) + 1;
+        int end = Array.FindIndex(lines, row => row.Contains("<" + cardName + " " + section)) - 1;
+       for(int ctr = start; ctr <= end; ctr++)
         {
-            string newJson = "{ \"array\": " + json + "}";
-            Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(newJson);
-            return wrapper.array;
+            if (lines[ctr].StartsWith("\\n"))
+            {
+                data += ("\n");
+            }
+            else
+                data += lines[ctr];
         }
-
-        [Serializable]
-        private class Wrapper<T>
-        {
-            public T[] array;
-        }
+        Info.text = data;
     }
 }

@@ -13,36 +13,44 @@ public class Menu : MonoBehaviour
     public GameObject Almanac;
     public GameObject CardInfo;
     public GameObject Shop;
+    public GameObject ItemInfo;
+    public GameObject Posttest;
 
     public GameObject LoadScreen;
     public Slider Loading;
     public HelpControl helpControl;
 
+    public GameObject Alert;
+
     string path;
+    string jsonString;
 
     Doctor doctor = new Doctor();
 
-    public void StartGame()
+    private void Start()
     {
         path = Path.Combine(Application.persistentDataPath, "Doctor.json");
-        if (!File.Exists(path))
+        if (File.Exists(path))
         {
-            CreateFile();
-            StartCoroutine(LoadAsync("Quiz"));
+            jsonString = File.ReadAllText(path);
+            doctor = JsonUtility.FromJson<Doctor>(jsonString);
+            if (doctor.Cards[2] && doctor.Posttest < 0)
+            {
+
+                AlertUI.alert = "You can now take post test";
+                Instantiate(Alert);
+                Posttest.SetActive(true);
+
+            }
         }
-        else
-            StartCoroutine(LoadAsync("Comic"));
     }
 
-    void CreateFile()
+    public void StartGame()
     {
-        doctor.Cards = new bool[] { false, false, false };
-        doctor.Pretest = -1;
-        doctor.Posttest = -1;
-        doctor.GainScore = -1;
-        string newDoctor = JsonUtility.ToJson(doctor, true);
-        File.WriteAllText(path, newDoctor);
+            StartCoroutine(LoadAsync("Chapter Selection"));
     }
+
+  
 
     public void OnAbout()
     {
@@ -71,6 +79,11 @@ public class Menu : MonoBehaviour
         Shop.SetActive(true);
     }
 
+    public void OnPosttest()
+    {
+        StartCoroutine(LoadAsync("Quiz"));
+    }
+
     public void OnClose()
     {
         About.SetActive(false);
@@ -79,6 +92,7 @@ public class Menu : MonoBehaviour
         Almanac.SetActive(false);
         CardInfo.SetActive(false);
         Shop.SetActive(false);
+        ItemInfo.SetActive(false);
     }
 
     public void ExitGame()

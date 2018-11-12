@@ -5,51 +5,37 @@ using UnityEngine.UI;
 using System.IO;
 using System;
 
-public class AlmanacControl : MonoBehaviour
+public class ChaptersControl : MonoBehaviour
 {
 
     string path;
     string jsonString;
     Doctor doctor = new Doctor();
-    public Image[] cards;
+    public Image[] chapters;
     Color unlocked = Color.white;
     Color locked = Color.gray;
 
     private void Start()
     {
         LoadData();
-        InitCards();
+        InitData();
     }
 
     void LoadData()
     {
         path = Path.Combine(Application.persistentDataPath, "Doctor.json");
-        if (!File.Exists(path))
-            LoadFromResource();
-        else
-            LoadFromSave();
-    }
-
-    void LoadFromSave()
-    {
         jsonString = File.ReadAllText(path);
         doctor = JsonUtility.FromJson<Doctor>(jsonString);
     }
-
-    void LoadFromResource()
+  
+    void InitData()
     {
-        TextAsset jsonTextFile = Resources.Load<TextAsset>("Doctor") as TextAsset;
-        doctor = JsonUtility.FromJson<Doctor>(jsonTextFile.ToString());
-    }
-
-    void InitCards()
-    {
-        for (int i = 0; i < doctor.Cards.Length; i++)
+        for (int i = 1; i < doctor.Cards.Length; i++)
         {
-            if (doctor.Cards[i])
-                cards[i].color = unlocked;
+            if (doctor.Cards[i-1])
+                chapters[i].color = unlocked;
             else
-                cards[i].color = locked;
+                chapters[i].color = locked;
         }
     }
 

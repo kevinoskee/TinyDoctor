@@ -14,13 +14,13 @@ public class CardControl : MonoBehaviour, IPointerClickHandler
             switch (gameObject.name)
             {
                 case "Card1":
-                    CardInfoControl.cardIndex = 0;
+                    CardInfoControl.cardName = "Hepatitis";
                     break;
                 case "Card2":
-                    CardInfoControl.cardIndex = 1;
+                    CardInfoControl.cardName = "Dengue";
                     break;
                 case "Card3":
-                    CardInfoControl.cardIndex = 2;
+                    CardInfoControl.cardName = "Leptospirosis";
                     break;
 
             }

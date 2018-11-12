@@ -3,35 +3,45 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System;
 
-public class CamControl : MonoBehaviour
+public class ComicControl : MonoBehaviour
 {
 
     private Camera Camera;
-    public Vector3[] pos;
     public Button prevBtn;
     public Button nextBtn;
     public Text nextBtnText;
     public GameObject LoadScreen;
     public Slider Loading;
 
+    public Sprite[] comics;
+
+    public SpriteRenderer comicImage;
+    public SpriteRenderer comicBG;
+
+
+
+    public static int chapter = 0;
     private int navigate = 0;
 
     private void Start()
     {
+        comicImage.sprite = comics[chapter];
+        comicBG.sprite = comics[chapter];
         Camera = GetComponent<Camera>();
-        Camera.transform.position = pos[navigate];
+        Camera.transform.position = PositionList[chapter].pos[navigate];
         prevBtn.enabled = false;
     }
 
     private void Update()
     {
-        Camera.transform.position = Vector3.Lerp(Camera.transform.position, pos[navigate+1], Time.deltaTime * 5f);
+        Camera.transform.position = Vector3.Lerp(Camera.transform.position, PositionList[chapter].pos[navigate+1], Time.deltaTime * 5f);
         if (navigate == 0)
             prevBtn.enabled = false;
         else
             prevBtn.enabled = true;
-        if (navigate + 2 == pos.Length)
+        if (navigate + 2 == PositionList[chapter].pos.Length)
             nextBtnText.text = "Start Game";
         else
             nextBtnText.text = "Next";
@@ -44,7 +54,21 @@ public class CamControl : MonoBehaviour
             navigate++;
         }
         else
-            StartCoroutine(LoadAsync("Main Game"));
+        {
+            switch (chapter)
+            {
+                case 0:
+                    StartCoroutine(LoadAsync("Chapter 1"));
+                    break;
+                case 1:
+                    StartCoroutine(LoadAsync("Chapter 2"));
+                    break;
+                case 2:
+                    StartCoroutine(LoadAsync("Chapter 3"));
+                    break;
+            }
+        }
+            
 
     }
 
@@ -65,5 +89,10 @@ public class CamControl : MonoBehaviour
             yield return null;
         }
     }
-
+    [Serializable]
+    public class Vector3List
+    {
+        public Vector3[] pos;
+    }
+    public Vector3List[] PositionList;
 }

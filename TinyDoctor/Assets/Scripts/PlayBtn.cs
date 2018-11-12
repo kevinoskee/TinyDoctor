@@ -11,7 +11,7 @@ public class PlayBtn : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         PauseUI.SetActive(false);
-        PauseBtn.isPause = false;
+  //      PauseBtn.isPause = false;
         Time.timeScale = 1f;
         source.Play();
     }

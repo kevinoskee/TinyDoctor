@@ -12,7 +12,7 @@ public class MenuBtn : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        PauseBtn.isPause = false;
+     //   PauseBtn.isPause = false;
         Time.timeScale = 1f;
         StartCoroutine(LoadAsync("Game Menu"));
     }

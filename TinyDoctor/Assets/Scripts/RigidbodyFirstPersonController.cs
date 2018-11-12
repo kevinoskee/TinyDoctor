@@ -233,7 +233,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         {
             path = Path.Combine(Application.persistentDataPath, "Doctor.json");
             doctor.Coins = totalCoins;
-            doctor.Cards[0] = true;
+            doctor.Cards[ComicControl.chapter] = true;
             string newDoctor = JsonUtility.ToJson(doctor, true);
             File.WriteAllText(path, newDoctor);
             LoadData();
@@ -254,7 +254,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
             if (!Boss.activeSelf)
             {
-                if(!doctor.Cards[0])
+                if(!doctor.Cards[ComicControl.chapter])
                     CardUI.SetActive(true);
                 else
                     StartCoroutine(LoadAsync("Game Menu"));

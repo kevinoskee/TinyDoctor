@@ -20,6 +20,9 @@ public class Quiz : MonoBehaviour
     public GameObject LoadScreen;
     public Slider Loading;
 
+    public GameObject GainScoreUI;
+    public Text GainScore;
+
     int point;
 
     string path;
@@ -67,17 +70,23 @@ public class Quiz : MonoBehaviour
     void WriteScore()
     {
         if (doctor.Pretest < 0)
+        {
             doctor.Pretest = point;
+            string newScore = JsonUtility.ToJson(doctor, true);
+            File.WriteAllText(path, newScore);
+            ComicControl.chapter = 0;
+            StartCoroutine(LoadAsync("Game Menu"));
+        }
         else
+        {
             doctor.Posttest = point;
-
-
-
-        string newScore = JsonUtility.ToJson(doctor, true);
-        File.WriteAllText(path, newScore);
-
-        StartCoroutine(LoadAsync("Comic"));
-       
+            string newScore = JsonUtility.ToJson(doctor, true);
+            File.WriteAllText(path, newScore);
+            doctor.GainScore = doctor.Posttest - doctor.Pretest;
+            GainScoreUI.SetActive(true);
+            GainScore.text = doctor.GainScore.ToString();
+         
+        }
     }
 
     [Serializable]

@@ -12,8 +12,7 @@ public class Card : MonoBehaviour {
 
     private void Start()
     {
-        seconds = gameObject.transform.Find("Panel/Card").GetComponent<Animation>().GetClip("CardAnim").length + 1;
-        Destroy(Panel, seconds);
+        seconds = gameObject.GetComponent<Animation>().GetClip("CardAnim").length + 1;
         StartCoroutine(LoadAsync("Game Menu"));
     }
 
